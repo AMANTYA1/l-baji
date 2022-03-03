@@ -31,6 +31,16 @@ from Yukki.Utilities.youtube import (get_yt_info_id, get_yt_info_query,
                                      get_yt_info_query_slider)
 
 from Yukki.Plugins.custom.func import mplay_stream, vplay_stream
+from pyrogram.errors import UserNotParticipant
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+JOIN_ASAP = f"⛔️** Access Denied **⛔️\n\n🙋‍♂️ Hey There , You Must Join @kigo_omfo Telegram Channel To Use This BOT. So, Please Join it & Try Again🤗. Thank You 🤝"
+
+FSUBB = InlineKeyboardMarkup(
+        [[
+        InlineKeyboardButton(text="KIGO Team Bots", url=f"https://t.me/kigo_omfo") 
+        ]]
+    )
 
 @app.on_message(
     filters.command(["play", f"play@{BOT_USERNAME}"]) & filters.group
@@ -39,7 +49,14 @@ from Yukki.Plugins.custom.func import mplay_stream, vplay_stream
 @logging
 @PermissionCheck
 @AssistantAdd
-async def mplayaa(_, message: Message):    
+async def mplayaa(_, message: Message): 
+    try:
+        await message._client.get_chat_member(int("-1001325914694"), message.from_user.id)
+    except UserNotParticipant:
+        await message.reply_text(
+        text=JOIN_ASAP, disable_web_page_preview=True, reply_markup=FSUBB
+    )
+        return   
     await message.delete()
     if message.chat.id not in db_mem:
         db_mem[message.chat.id] = {}
@@ -60,18 +77,8 @@ async def mplayaa(_, message: Message):
     url = get_url(message)
     if audio:
         mystic = await message.reply_text(
-            "🔄 Processing Audio... Please Wait!"
+            "`Processing Audio... Please Wait!`"
         )
-        try:
-            read = db_mem[message.chat.id]["live_check"]
-            if read:
-                return await mystic.edit(
-                    "Live Streaming Playing...Stop it to play music"
-                )
-            else:
-                pass
-        except:
-            pass
         if audio.file_size > 1073741824:
             return await mystic.edit_text(
                 "Audio File Size Should Be Less Than 150 mb"
@@ -131,11 +138,8 @@ async def mplayaa(_, message: Message):
             buttons = playlist_markup(
                 message.from_user.first_name, message.from_user.id, "abcd"
             )
-            await message.reply_photo(
-                photo="Utils/Playlist.jpg",
-                caption=(
-                    "**Usage:** /play [Music Name or Youtube Link or Reply to Audio]\n\nIf you want to play Playlists! Select the one from Below."
-                ),
+            await message.reply_text(
+                    "**Usage:** /play [Music Name or Youtube Link or Reply to Audio]\n\nIf you want to play Playlists! Select the one from Below.",
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
             return
@@ -163,6 +167,13 @@ async def mplayaa(_, message: Message):
 @PermissionCheck
 @AssistantAdd
 async def vplayaaa(_, message: Message):
+    try:
+        await message._client.get_chat_member(int("-1001325914694"), message.from_user.id)
+    except UserNotParticipant:
+        await message.reply_text(
+        text=JOIN_ASAP, disable_web_page_preview=True, reply_markup=FSUBB
+    )
+        return 
     await message.delete()
     if message.chat.id not in db_mem:
         db_mem[message.chat.id] = {}
@@ -198,7 +209,7 @@ async def vplayaaa(_, message: Message):
                     "Sorry! Bot only allows limited number of video calls due to CPU overload issues. Many other chats are using video call right now. Try switching to audio or try again later"
                 )
         mystic = await message.reply_text(
-            "🔄 Processing Video... Please Wait!"
+            "`Processing Video... Please Wait!`"
         )
         try:
             read = db_mem[message.chat.id]["live_check"]
@@ -218,7 +229,7 @@ async def vplayaaa(_, message: Message):
             mystic,
         )
     elif url:
-        mystic = await message.reply_text("🔄 Processing URL... Please Wait!")
+        mystic = await message.reply_text("`Processing URL... Please Wait!`")
         if not message.reply_to_message:
             query = message.text.split(None, 1)[1]
         else:
@@ -240,15 +251,12 @@ async def vplayaaa(_, message: Message):
             buttons = playlist_markup(
                 message.from_user.first_name, message.from_user.id, "abcd"
             )
-            await message.reply_photo(
-                photo="Utils/Playlist.jpg",
-                caption=(
-                    "**Usage:** /play [Music Name or Youtube Link or Reply to Audio]\n\nIf you want to play Playlists! Select the one from Below."
-                ),
+            await message.reply_text(
+                    "**Usage:** /play [Music Name or Youtube Link or Reply to Audio]\n\nIf you want to play Playlists! Select the one from Below.",
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
             return
-        mystic = await message.reply_text("🔄 Processing... Please Wait!")
+        mystic = await message.reply_text("`Processing... Please Wait!`")
         query = message.text.split(None, 1)[1]
         (
             title,
