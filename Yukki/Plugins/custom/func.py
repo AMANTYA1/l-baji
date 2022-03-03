@@ -59,6 +59,14 @@ loop = asyncio.get_event_loop()
 async def mplay_stream(message,MusicData):
     if message.chat.id not in db_mem:
         db_mem[message.chat.id] = {}
+    try:
+        read1 = db_mem[message.chat.id]["live_check"]
+        if read1:
+            return await message.reply_text("Live Streaming Playing...Stop it to play music")
+        else:
+            pass
+    except:
+        pass
     callback_data = MusicData.strip()
     callback_request = callback_data.split(None, 1)[1]
     chat_id = message.chat.id
@@ -85,16 +93,8 @@ async def mplay_stream(message,MusicData):
         )
     mystic = await message.reply_text(f"Processing:- {title[:20]}")
     await mystic.edit(
-   f"""
-**Rose music Downloader**
-
-100% •••••••••••••••100%
-
-ᗚ **Title:** `{title[:50]}`
-ᗚ  **duration** :`{duration_min}`
-
-ᗚ @kigo_omfo | @OmFoXD    
-                    """)
+        f"**{MUSIC_BOT_NAME} Downloader**\n\n**Title:** {title[:50]}\n\n0% ▓▓▓▓▓▓▓▓▓▓▓▓ 100%"
+    )
     downloaded_file = await loop.run_in_executor(
         None, download, videoid, mystic, title
     )
@@ -160,12 +160,7 @@ async def custom_start_stream(
         final_output = await message.reply_photo(
             photo=thumb,
             caption=(
-                f"""
-💡 **Track added to queue**» `{position}`
-🏷 **Name:** [{title[:25]}](https://www.youtube.com/watch?v={videoid}) 
-⏱ **Duration:** `{duration}`
-🎧** Request by:**{user}
-📖 **Info**: [Get Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})"""
+                f"🎬<b>__Song:__ </b>[{title[:25]}](https://www.youtube.com/watch?v={videoid}) \n⏳<b>__Duration:__</b> {duration_min} \n💡<b>__Info:__</b> [Get Additional Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})\n👤<b>__Requested by:__ </b>{message.from_user.mention} \n🚧<b>__Queued at:__</b> <b>#{position}!</b>"
             ),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
@@ -188,13 +183,7 @@ async def custom_start_stream(
             videoid, message.from_user.id, duration_min, duration_min
         )
         await mystic.delete()
-        cap = f"""
-🏷 **Name:** [{title[:25]}](https://www.youtube.com/watch?v={videoid}) 
-⏱ **Duration:** `{duration}`
-💡 **Status:** `Playing Video`
-🎧** Request by:**{user}
-📖 **Info**: [Get Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})
-"""     
+        cap = f"🎥<b>__Playing:__ </b>[{title[:25]}](https://www.youtube.com/watch?v={videoid}) \n💡<b>__Info:__</b> [Get Additional Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})\n👤**__Requested by:__** {message.from_user.mention}"
         final_output = await message.reply_photo(
             photo=thumb,
             reply_markup=InlineKeyboardMarkup(buttons),
@@ -226,7 +215,15 @@ async def vplay_stream(message,VideoData,mystic):
         else:
             return await message.reply_text("Sorry! Bot only allows limited number of video calls due to CPU overload issues. Other chats are using video call right now. Try switching to audio or try again later")
     if message.chat.id not in db_mem:
-        db_mem[message.chat.id] = {}  
+        db_mem[message.chat.id] = {}
+    try:
+        read1 = db_mem[message.chat.id]["live_check"]
+        if read1:
+            return await message.reply_text("Live Streaming Playing...Stop it to play music")
+        else:
+            pass
+    except:
+        pass    
     callback_data = VideoData.strip()
     callback_request = callback_data.split(None, 1)[1]
     videoid, duration, user_id = callback_request.split("|")    
@@ -324,12 +321,7 @@ async def custom_video_stream(
         final_output = await message.reply_photo(
             photo=thumb,
             caption=(
-                f"""
-💡 **Track added to queue**» `{position}`
-🏷 **Name:** [{title[:25]}](https://www.youtube.com/watch?v={videoid}) 
-⏱ **Duration:** `{duration}`
-🎧** Request by:**{user}
-📖 **Info**: [Get Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})"""
+                f"🎬<b>Video:__ </b>[{title[:25]}](https://www.youtube.com/watch?v={videoid}) \n⏳<b>__Duration:__</b> {duration_min} \n💡<b>__Info:__</b> [Get Additional Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})\n👤<b>__Requested by:__ </b>{message.from_user.mention} \n🚧<b>__ Video Queued at:__</b> <b>#{position}!</b>"
             ),
             reply_markup=InlineKeyboardMarkup(buttons),
         )        
@@ -356,12 +348,7 @@ async def custom_video_stream(
         buttons = primary_markup(
             videoid, message.from_user.id, duration_min, duration_min
         )
-        cap = f"""
-🏷<b>Name:</b>[{title[:25]}](https://www.youtube.com/watch?v={videoid})
-⏱<b>Duration:</b> `{duration_min}` 
-📖<b>Info:</b> [Get  Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})
-🎧**Requested by:** {message.from_user.mention}
-        """
+        cap = f"**Video Streaming**\n\n🎥<b>__Playing:__ </b>[{title[:25]}](https://www.youtube.com/watch?v={videoid}) \n💡<b>__Info:__</b> [Get Additional Information](https://t.me/{BOT_USERNAME}?start=info_{videoid})\n👤**__Requested by:__** {message.from_user.mention}"
         final_output = await message.reply_photo(
             photo=thumb,
             reply_markup=InlineKeyboardMarkup(buttons),
